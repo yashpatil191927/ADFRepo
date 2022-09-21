@@ -23,6 +23,10 @@
 			"type": "string",
 			"defaultValue": "https://Yash-KVDemo.vault.azure.net/"
 		},
+		"LS_BlobStorage_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "Yash19127"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -61,6 +65,9 @@
 					},
 					"LS_KV_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('LS_KV_properties_typeProperties_connectionString_secretName')]"
+					},
+					"LS_BlobStorage_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_BlobStorage_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},

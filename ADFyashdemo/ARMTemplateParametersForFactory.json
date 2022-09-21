@@ -16,6 +16,9 @@
 		},
 		"LS_KeyVault_properties_typeProperties_baseUrl": {
 			"value": "https://Yash-KVDemo.vault.azure.net/"
+		},
+		"LS_BlobStorage_properties_typeProperties_connectionString_secretName": {
+			"value": "Yash19127"
 		}
 	}
 }
