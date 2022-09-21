@@ -1,0 +1,37 @@
+{
+	"name": "Masterpipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute Pipeline1",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pipeline2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"FileName": "Dailysales"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Sourcetable": {
+				"type": "string"
+			},
+			"dbname": {
+				"type": "string"
+			},
+			"Destination": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-16T13:47:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

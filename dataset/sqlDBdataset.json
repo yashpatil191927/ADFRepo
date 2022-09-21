@@ -1,0 +1,13 @@
+{
+	"name": "sqlDBdataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServerlinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

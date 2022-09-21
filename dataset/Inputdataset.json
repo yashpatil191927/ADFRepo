@@ -1,0 +1,20 @@
+{
+	"name": "Inputdataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedservice_storagedemoyash",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Q&A.txt",
+				"folderPath": "Input",
+				"container": "adfdemo"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,9 @@
+{
+	"name": "ADFyashdemo",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "24ce1a7c-dc72-4316-8db2-e9cb24620f21",
+		"tenantId": "eef121a5-4ba5-4b3d-964e-bc3851225fbb"
+	}
+}

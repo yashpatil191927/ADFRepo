@@ -1,0 +1,72 @@
+{
+	"name": "EmpDepdataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Employeedataset",
+						"type": "DatasetReference"
+					},
+					"name": "Employeedata"
+				},
+				{
+					"dataset": {
+						"referenceName": "Departmentdataset",
+						"type": "DatasetReference"
+					},
+					"name": "Departmentdata"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputEmpDep",
+						"type": "DatasetReference"
+					},
+					"name": "OuputOfEmpDep"
+				}
+			],
+			"transformations": [
+				{
+					"name": "joinEmpOndept"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Empid as string,",
+				"          Name as string,",
+				"          Country as string,",
+				"          Dept as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Employeedata",
+				"source(output(",
+				"          Depid as string,",
+				"          Depname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Departmentdata",
+				"Employeedata, Departmentdata join(Dept == Depid,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinEmpOndept",
+				"joinEmpOndept sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Empid,",
+				"          Name,",
+				"          Country,",
+				"          Dept,",
+				"          Depname",
+				"     )) ~> OuputOfEmpDep"
+			]
+		}
+	}
+}
