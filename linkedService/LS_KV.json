@@ -8,7 +8,7 @@
 			"connectionString": {
 				"type": "AzureKeyVaultSecret",
 				"store": {
-					"referenceName": "LS_KeyVault_ADFYashDemo",
+					"referenceName": "LS_KeyVault",
 					"type": "LinkedServiceReference"
 				},
 				"secretName": "Yash19127"
