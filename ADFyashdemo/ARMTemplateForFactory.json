@@ -995,6 +995,20 @@
 								}
 							},
 							"enableStaging": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": true
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "linkedservice_storagedemoyash",
+										"type": "LinkedServiceReference"
+									},
+									"path": "adfdemo"
+								}
+							},
 							"translator": {
 								"type": "TabularTranslator",
 								"typeConversion": true,
@@ -1006,14 +1020,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "EMPDATASET",
+								"referenceName": "Employeedataset",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "OUTPUTDATASET",
+								"referenceName": "OutputEmpDep",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1027,8 +1041,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/EMPDATASET')]",
-				"[concat(variables('factoryId'), '/datasets/OUTPUTDATASET')]"
+				"[concat(variables('factoryId'), '/datasets/Employeedataset')]",
+				"[concat(variables('factoryId'), '/datasets/OutputEmpDep')]",
+				"[concat(variables('factoryId'), '/linkedServices/linkedservice_storagedemoyash')]"
 			]
 		},
 		{
