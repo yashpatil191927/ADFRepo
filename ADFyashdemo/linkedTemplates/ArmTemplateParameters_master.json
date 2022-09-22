@@ -11,14 +11,14 @@
 		"linkedservice_storagedemoyash_connectionString": {
 			"value": ""
 		},
+		"LS_BlobStorage_properties_typeProperties_connectionString_secretName": {
+			"value": "Yash19127"
+		},
 		"LS_KV_properties_typeProperties_connectionString_secretName": {
 			"value": "Yash19127"
 		},
 		"LS_KeyVault_properties_typeProperties_baseUrl": {
 			"value": "https://Yash-KVDemo.vault.azure.net/"
-		},
-		"LS_BlobStorage_properties_typeProperties_connectionString_secretName": {
-			"value": "Yash19127"
 		},
 		"containerUri": {
 			"value": ""
