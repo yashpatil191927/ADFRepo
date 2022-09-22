@@ -1,0 +1,30 @@
+{
+	"name": "ErrorRowHandledataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SalesIndiadatadset",
+						"type": "DatasetReference"
+					},
+					"name": "SalesIndia"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          SaleDate as string,",
+				"          SaleItem as string,",
+				"          Country as string,",
+				"          Quantity as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SalesIndia"
+			]
+		}
+	}
+}
