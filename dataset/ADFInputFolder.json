@@ -1,0 +1,32 @@
+{
+	"name": "ADFInputFolder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedservice_storagedemoyash",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "Input",
+				"container": "adfdemo"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Depid",
+				"type": "String"
+			},
+			{
+				"name": "Depname",
+				"type": "String"
+			}
+		]
+	}
+}
