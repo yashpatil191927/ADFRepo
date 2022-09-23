@@ -13,7 +13,11 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          SaleDate as string,",
@@ -23,7 +27,9 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SalesIndia"
+				"     ignoreNoFilesFound: false) ~> SalesIndia",
+				"SalesIndia split(isNull(toDate(SaleDate,'DD-MMM-YYYY'))   ,",
+				"     disjoint: false) ~> split1@(ErrorRows, GoodRows)"
 			]
 		}
 	}
