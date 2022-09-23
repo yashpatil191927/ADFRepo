@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "ADFyashdemo"
 		},
+		"LS_SqlDatabase_connectionString": {
+			"value": ""
+		},
 		"SqlServerlinkedservice_connectionString": {
 			"value": ""
 		},

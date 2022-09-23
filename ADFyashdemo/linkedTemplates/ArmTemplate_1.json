@@ -6,6 +6,10 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "ADFyashdemo"
+		},
+		"LS_KV_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "Yash19127"
 		}
 	},
 	"variables": {
@@ -13,14 +17,37 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Lookuppipeline')]",
+			"name": "[concat(parameters('factoryName'), '/LS_KV')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Linked services for ADFYashDemo",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_KeyVault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('LS_KV_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Delete files older than 30 days')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "Please input a folder path as the parameter for this pipeline, and the pipeline will delete files which were last modified more than 30 days ago under the particular folder path.",
 				"activities": [
 					{
-						"name": "Lookup1",
-						"type": "Lookup",
+						"name": "DeleteFiles",
+						"description": "Connect to your storage account to save the log file.",
+						"type": "Delete",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -31,39 +58,135 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": "select foldername from tbl_Outputfolder",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
 							"dataset": {
-								"referenceName": "sqlDBdataset",
+								"referenceName": "BinaryDatasetForDeleteActivity1",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"FolderPath": {
+										"value": "@pipeline().parameters.SourceFolder",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.SourceDirectory",
+										"type": "Expression"
+									}
+								}
 							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
+							"logStorageSettings": {
+								"linkedServiceName": {
+									"referenceName": "linkedservice_storagedemoyash",
+									"type": "LinkedServiceReference"
+								},
+								"path": {
+									"value": "@pipeline().parameters.LoggingPath",
+									"type": "Expression"
+								}
+							},
+							"enableLogging": true,
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"modifiedDatetimeEnd": {
+									"value": "@{adddays(pipeline().TriggerTime, -30)}",
+									"type": "Expression"
+								},
+								"wildcardFileName": "*"
 							}
-						],
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceFolder": {
+						"type": "string",
+						"defaultValue": "sourcefolder"
+					},
+					"SourceDirectory": {
+						"type": "string",
+						"defaultValue": "subfolder"
+					},
+					"LoggingPath": {
+						"type": "string",
+						"defaultValue": "loggingfolder/subfolder"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ifconditionactivity')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup1').output.value",
+							"expression": {
+								"value": "@bool(pipeline().parameters.CopytoOutput1)",
 								"type": "Expression"
 							},
-							"isSequential": true,
-							"activities": [
+							"ifFalseActivities": [
+								{
+									"name": "Copy data2",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "Inputdataset",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Outputlocationdatadset",
+											"type": "DatasetReference",
+											"parameters": {
+												"Folder": {
+													"value": "@pipeline().parameters.Output2folder",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							],
+							"ifTrueActivities": [
 								{
 									"name": "Copy data1",
 									"type": "Copy",
@@ -108,7 +231,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"Folder": {
-													"value": "@item()",
+													"value": "@pipeline().parameters.Output1folder",
 													"type": "Expression"
 												}
 											}
@@ -123,8 +246,22 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"parameters": {
+					"CopytoOutput1": {
+						"type": "string",
+						"defaultValue": "True"
+					},
+					"Output1folder": {
+						"type": "string",
+						"defaultValue": "Output1"
+					},
+					"Output2folder": {
+						"type": "string",
+						"defaultValue": "Output2"
+					}
+				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-17T14:31:59Z"
+				"lastPublishTime": "2022-09-17T13:26:31Z"
 			},
 			"dependsOn": []
 		},
@@ -696,6 +833,110 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ErrorRowHandledataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SalesIndiadatadset",
+								"type": "DatasetReference"
+							},
+							"name": "SalesIndia"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "TableSalesBad",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "SalesIndiadatadset",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "split1"
+						},
+						{
+							"name": "FileName"
+						},
+						{
+							"name": "FilenameforGoodRows"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          SaleDate as string,",
+						"          SaleItem as string,",
+						"          Country as string,",
+						"          Quantity as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> SalesIndia",
+						"SalesIndia split(isNull(toDate(SaleDate,'DD-MMM-YYYY')),",
+						"     disjoint: false) ~> split1@(ErrorRows, GoodRows)",
+						"split1@ErrorRows derive(Filename = 'Sales.csv') ~> FileName",
+						"split1@GoodRows derive(Filename = 'Sales,csv',",
+						"          SaleDate = toDate(SaleDate, 'dd-MMM-YYYY'),",
+						"          Quantity = toInteger(Quantity)) ~> FilenameforGoodRows",
+						"FileName sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SaleDate as string,",
+						"          SaleItem as string,",
+						"          Country as string,",
+						"          Quantity as integer,",
+						"          Filename as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          SaleDate,",
+						"          SaleItem,",
+						"          Country,",
+						"          Quantity,",
+						"          Filename",
+						"     )) ~> sink1",
+						"FilenameforGoodRows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SaleDate as string,",
+						"          SaleItem as string,",
+						"          Country as string,",
+						"          Quantity as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          SaleDate,",
+						"          SaleItem,",
+						"          Country,",
+						"          Quantity",
+						"     )) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Filterpayrollemp')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -899,6 +1140,54 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/EmpDepdataflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DemoErrorRowHandle')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "ErrorRowHandledataflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SalesIndia": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/ErrorRowHandledataflow')]"
 			]
 		},
 		{

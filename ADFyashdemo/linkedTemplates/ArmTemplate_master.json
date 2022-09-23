@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ADFyashdemo"
 		},
+		"LS_SqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SqlDatabase'"
+		},
 		"SqlServerlinkedservice_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SqlServerlinkedservice'"
@@ -54,6 +58,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"LS_SqlDatabase_connectionString": {
+						"value": "[parameters('LS_SqlDatabase_connectionString')]"
+					},
 					"SqlServerlinkedservice_connectionString": {
 						"value": "[parameters('SqlServerlinkedservice_connectionString')]"
 					},
@@ -65,9 +72,6 @@
 					},
 					"LS_BlobStorage_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('LS_BlobStorage_properties_typeProperties_connectionString_secretName')]"
-					},
-					"LS_KV_properties_typeProperties_connectionString_secretName": {
-						"value": "[parameters('LS_KV_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},
@@ -86,6 +90,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"LS_KV_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_KV_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},
