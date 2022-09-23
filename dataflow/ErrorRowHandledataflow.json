@@ -12,10 +12,31 @@
 					"name": "SalesIndia"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TableSalesBad",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "SalesIndiadatadset",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "split1"
+				},
+				{
+					"name": "FileName"
+				},
+				{
+					"name": "FilenameforGoodRows"
 				}
 			],
 			"scriptLines": [
@@ -29,7 +50,51 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SalesIndia",
 				"SalesIndia split(isNull(toDate(SaleDate,'DD-MMM-YYYY'))   ,",
-				"     disjoint: false) ~> split1@(ErrorRows, GoodRows)"
+				"     disjoint: false) ~> split1@(ErrorRows, GoodRows)",
+				"split1@ErrorRows derive(Filename = 'Sales.csv') ~> FileName",
+				"split1@GoodRows derive(Filename = 'Sales,csv',",
+				"          SaleDate = toDate(SaleDate, 'dd-MMM-YYYY'),",
+				"          Quantity = toInteger(Quantity)) ~> FilenameforGoodRows",
+				"FileName sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SaleDate as string,",
+				"          SaleItem as string,",
+				"          Country as string,",
+				"          Quantity as integer,",
+				"          Filename as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          SaleDate,",
+				"          SaleItem,",
+				"          Country,",
+				"          Quantity,",
+				"          Filename",
+				"     )) ~> sink1",
+				"FilenameforGoodRows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SaleDate as string,",
+				"          SaleItem as string,",
+				"          Country as string,",
+				"          Quantity as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          SaleDate,",
+				"          SaleItem,",
+				"          Country,",
+				"          Quantity",
+				"     )) ~> sink2"
 			]
 		}
 	}

@@ -1,0 +1,38 @@
+{
+	"name": "TableSalesBad",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SqlDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SaleDate",
+				"type": "varchar"
+			},
+			{
+				"name": "SaleItem",
+				"type": "varchar"
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			},
+			{
+				"name": "Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Filename",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "BadTableSales"
+		}
+	}
+}
